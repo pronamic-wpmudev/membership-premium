@@ -444,7 +444,7 @@ if ( !class_exists( 'Pointer_Tutorial' ) ) {
 					// Added scrolling to next pointer.
 					// This will also fix positioning/orientation bugs that happen in some cases
 					// when the pointer is close to being off-screen.
-					$next_pointer = "$(window).scrollTop($('$next_pointer').offset().top-300); $('$next_pointer').pointer( options$next_pointer_id ).pointer('open').focus();";
+					$next_pointer = "$(window).scrollTop($('$next_pointer').offset().top-300); $('$next_pointer').pointer( options$next_pointer_id ).pointer('open').focus();";	  	 	 		     		 
 					$next_title = $this->page_pointers[$pointer_id+1]['title'];
 				} else {
 					$next_name = __('Dismiss', $this->textdomain);

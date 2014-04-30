@@ -1,5 +1,4 @@
 <?php
-
 if ( !class_exists( 'membershippublic', false ) ) :
 	class membershippublic {
 
@@ -56,6 +55,7 @@ if ( !class_exists( 'membershippublic', false ) ) :
 
 		function register_shortcodes() {
 			global $member;
+			$member = Membership_Plugin::current_member();
 
 			foreach ( array( 'membership_level_shortcodes', 'membership_not_level_shortcodes' ) as $index => $filter ) {
 				$shortcodes = apply_filters( $filter, array() );
@@ -276,8 +276,8 @@ if ( !class_exists( 'membershippublic', false ) ) :
 				$protected = array_pop( $protected );
 			}
 
-			if ( empty( $protected ) && !empty( $_GET['file'] ) ) {
-				$protected = $_GET['file'];
+			if ( empty( $protected ) && !empty( $_GET['ms_file'] ) && 'hybrid' == $M_options['protection_type'] ) {
+				$protected = $_GET['ms_file'];
 			}
 
 			if ( !empty( $protected ) ) {
@@ -873,7 +873,7 @@ if ( !class_exists( 'membershippublic', false ) ) :
 										case 'hybrid' :		$protectedfilename = MEMBERSHIP_FILE_NAME_PREFIX . ($post_id + (int) MEMBERSHIP_FILE_NAME_INCREMENT) . $size_extension;
 															$protectedfilename .= "." . pathinfo($newfile, PATHINFO_EXTENSION);
 
-															$the_content = str_replace( $matches[0][$foundlocal], $newpath . "?file=" . $protectedfilename, $the_content );
+															$the_content = str_replace( $matches[0][$foundlocal], $newpath . "?ms_file=" . $protectedfilename, $the_content );
 															break;
 
 										case 'basic' :
@@ -1581,13 +1581,17 @@ if ( !class_exists( 'membershippublic', false ) ) :
 
 				// Redirect members with subscriptions to the subscriptions page if it exists, else account page.
 				global $member;
-				if ( $member->has_subscription() && $member->ID != 0 && ! isset( $_GET['from_subscription'] ) ) {
-					if( ! empty( $M_options['subscriptions_page'] ) ) {
-						wp_redirect( get_permalink( $M_options['subscriptions_page'] ) );
-						exit;
-					} else {
-						wp_redirect( get_permalink( $M_options['account_page'] ) );
-						exit;
+				$member = Membership_Plugin::current_member();
+
+				if ( !empty( $member ) ) {
+					if ( $member->has_subscription() && $member->ID != 0 && ! isset( $_GET['from_subscription'] ) ) {
+						if( ! empty( $M_options['subscriptions_page'] ) ) {
+							wp_redirect( get_permalink( $M_options['subscriptions_page'] ) );
+							exit;
+						} else {
+							wp_redirect( get_permalink( $M_options['account_page'] ) );
+							exit;
+						}
 					}
 				}
 
@@ -1843,6 +1847,7 @@ if ( !class_exists( 'membershippublic', false ) ) :
 					if ( !current_theme_supports( 'membership_subscription_form' ) ) {
 						$this->enqueue_fancybox_scripts();
 					}
+					$this->enqueue_public_form_styles();
 					do_action( 'membership_subscriptionbutton_onpage' );
 				}
 
