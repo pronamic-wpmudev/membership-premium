@@ -166,7 +166,7 @@ class Membership_Model_Level {
 		if($this->id < 0 ) {
 			return $this->add();
 		} else {
-			$return = $this->db->update($this->membership_levels, array('level_title' => $_POST['level_title'], 'level_slug' => sanitize_title($_POST['level_title'])), array('id' => $this->id));	  	 	 		     		 
+			$return = $this->db->update($this->membership_levels, array('level_title' => $_POST['level_title'], 'level_slug' => sanitize_title($_POST['level_title'])), array('id' => $this->id));
 
 			// Remove the existing rules for this membership level
 			$this->db->query( $this->db->prepare( "DELETE FROM {$this->membership_rules} WHERE level_id = %d", $this->id ) );
